@@ -45,4 +45,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("com.squareup.okhttp3:okhttp:4.9.3") // 检查最新版本
+
+    // 添加JSON库依赖
+    implementation(libs.json) // 如果你使用 org.json 库
 }

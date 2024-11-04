@@ -1,0 +1,71 @@
+package com.tangthinker.transferstation
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.telephony.SmsMessage
+import android.util.Log
+import android.widget.Toast
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import org.json.JSONObject
+import java.io.IOException
+
+
+class SmsReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val bundle = intent.extras
+        if (bundle != null) {
+            val pdus = bundle.get("pdus") as Array<*>
+            for (pdu in pdus) {
+                val smsMessage = SmsMessage.createFromPdu(pdu as ByteArray)
+                val sender = smsMessage.displayOriginatingAddress
+                val messageBody = smsMessage.messageBody
+                Log.d("SmsReceiver", "Sender: $sender, Message: $messageBody")
+                // 处理短信内容
+                Toast.makeText(context, "Sender: $sender\nMessage: $messageBody", Toast.LENGTH_LONG).show()
+                val message = "Sender: $sender\nMessage:$messageBody"
+                val jsonData = JSONObject().apply {
+                    put("msg_type", "text")
+                    put("content", JSONObject().apply {
+                        put("text", message)
+                    })
+                }
+
+                sendPostRequest("https://open.feishu.cn/open-apis/bot/v2/hook/fd470b1e-7a1d-4172-984b-14ec132c0132", jsonData)
+            }
+        }
+    }
+
+
+    private fun sendPostRequest(url: String, jsonData: JSONObject) {
+        val client = OkHttpClient()
+
+        // Use the new way to create MediaType
+        val requestBody = RequestBody.create(
+            "application/json; charset=utf-8".toMediaType(),
+            jsonData.toString()
+        )
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val responseData = response.body?.string()
+                    println("Response: $responseData")
+                } else {
+                    println("Request failed with code: ${response.code}")
+                }
+            }
+        })
+    }
+
+}
