@@ -8,16 +8,17 @@
     tools:context=".MainActivity">
 
     <EditText
+        android:id="@+id/inputEt"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:textSize="20sp"
-        android:layout_above="@id/button"
+        android:layout_above="@id/startBtn"
         android:layout_marginBottom="20dp"
         android:hint="" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/startBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
