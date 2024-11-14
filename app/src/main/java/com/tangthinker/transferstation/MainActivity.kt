@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         if (existWebhook != "") {
             binding.inputEt.setText(existWebhook)
-            binding.startBtn.text = "运行中"
+            binding.startTxt.text = "运行中"
             StartStatus = true
         }
 
@@ -51,11 +51,11 @@ class MainActivity : AppCompatActivity() {
                 val input = binding.inputEt.text.toString()
                 Toast.makeText(this, "start service at: $input", Toast.LENGTH_SHORT).show()
                 sharedPreferences.edit().putString(WebhookKey, input).apply()
-                binding.startBtn.text = "运行中"
+                binding.startTxt.text = "运行中"
                 StartStatus = true
             } else {
                 Toast.makeText(this, "stop service", Toast.LENGTH_SHORT).show()
-                binding.startBtn.text = "启动"
+                binding.startTxt.text = "启动"
                 StartStatus = false
             }
 
