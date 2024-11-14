@@ -3,6 +3,7 @@ package com.tangthinker.transferstation
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.provider.Telephony
 import android.telephony.SmsMessage
 import android.util.Log
 import android.widget.Toast
@@ -18,16 +19,12 @@ class SmsReceiver : BroadcastReceiver() {
     private val WebhookKey = "webhook-key"
 
     override fun onReceive(context: Context, intent: Intent) {
-        val bundle = intent.extras
-
         val sharedPreferences = context.getSharedPreferences(StorageKey, Context.MODE_PRIVATE)
-
-        if (bundle != null) {
-            val pdus = bundle.get("pdus") as Array<*>
-            for (pdu in pdus) {
-                val smsMessage = SmsMessage.createFromPdu(pdu as ByteArray)
+        if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION == intent.action) {
+            for (smsMessage in Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
                 val sender = smsMessage.displayOriginatingAddress
                 val messageBody = smsMessage.messageBody
+                // 处理接收到的短信
                 Log.d("SmsReceiver", "Sender: $sender, Message: $messageBody")
                 // 处理短信内容
                 Toast.makeText(context, "Sender: $sender\nMessage: $messageBody", Toast.LENGTH_LONG).show()
@@ -46,6 +43,7 @@ class SmsReceiver : BroadcastReceiver() {
             }
         }
     }
+
 
 
     private fun sendPostRequest(url: String, jsonData: JSONObject) {
