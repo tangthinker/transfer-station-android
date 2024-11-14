@@ -1,6 +1,7 @@
 package com.tangthinker.transferstation
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
@@ -18,9 +19,16 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private val StorageKey = "sms-prefs"
+    private val WebhookKey = "webhook-key"
+
+    private var StartStatus = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sharedPreferences = this.getSharedPreferences(StorageKey, Context.MODE_PRIVATE)
+
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -29,9 +37,28 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val existWebhook = sharedPreferences.getString(WebhookKey, "")
+
+        if (existWebhook != "") {
+            binding.inputEt.setText(existWebhook)
+            binding.startBtn.text = "运行中"
+            StartStatus = true
+        }
+
         binding.startBtn.setOnClickListener  {
-            val input = binding.inputEt.text.toString()
-            Toast.makeText(this, "input is $input", Toast.LENGTH_SHORT).show()
+            if (!StartStatus) {
+                val input = binding.inputEt.text.toString()
+                Toast.makeText(this, "start service at: $input", Toast.LENGTH_SHORT).show()
+                sharedPreferences.edit().putString(WebhookKey, input).apply()
+                binding.startBtn.text = "运行中"
+                StartStatus = true
+            } else {
+                Toast.makeText(this, "stop service", Toast.LENGTH_SHORT).show()
+                binding.startBtn.text = "启动"
+                StartStatus = false
+            }
+
         }
 
         requestSmsPermissions()

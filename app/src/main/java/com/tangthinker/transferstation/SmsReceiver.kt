@@ -13,8 +13,15 @@ import java.io.IOException
 
 
 class SmsReceiver : BroadcastReceiver() {
+
+    private val StorageKey = "sms-prefs"
+    private val WebhookKey = "webhook-key"
+
     override fun onReceive(context: Context, intent: Intent) {
         val bundle = intent.extras
+
+        val sharedPreferences = context.getSharedPreferences(StorageKey, Context.MODE_PRIVATE)
+
         if (bundle != null) {
             val pdus = bundle.get("pdus") as Array<*>
             for (pdu in pdus) {
@@ -32,7 +39,10 @@ class SmsReceiver : BroadcastReceiver() {
                     })
                 }
 
-                sendPostRequest("https://open.feishu.cn/open-apis/bot/v2/hook/fd470b1e-7a1d-4172-984b-14ec132c0132", jsonData)
+                val webhook = sharedPreferences.getString(WebhookKey, "")
+                if (!webhook.isNullOrEmpty()) {
+                    sendPostRequest(webhook, jsonData)
+                }
             }
         }
     }
