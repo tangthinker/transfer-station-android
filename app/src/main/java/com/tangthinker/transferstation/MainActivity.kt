@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun readSMS(contentResolver: ContentResolver, webhook: String) {
         val projection = arrayOf(Telephony.Sms._ID, Telephony.Sms.ADDRESS, Telephony.Sms.BODY, Telephony.Sms.DATE)
-        val sortOrder = "${Telephony.Sms.DATE} ASC"
+        val sortOrder = "${Telephony.Sms.DATE} DESC"
         val selection = "${Telephony.Sms.DATE} > ?"
         val selectionArgs = arrayOf(lastSMSReceiveTime.toString())
         val cursor = contentResolver.query(Telephony.Sms.CONTENT_URI, projection, selection, selectionArgs, sortOrder)
